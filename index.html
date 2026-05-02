@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Love Companion - AI恋人陪伴</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💗%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fef9f3;
+      --fg: #4a3f35;
+      --muted: #9a8b7a;
+      --accent: #e8b4b8;
+      --accent-soft: #f5d5d8;
+      --card: #fffaf6;
+      --border: #e8ddd3;
+      --shadow: rgba(74, 63, 53, 0.08);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Noto Serif SC', serif;
+      background: var(--bg);
+      color: var(--fg);
+      line-height: 1.8;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* 背景装饰 */
+    .bg-decoration {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-decoration::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -30%;
+      width: 80vw;
+      height: 80vw;
+      background: radial-gradient(circle, var(--accent-soft) 0%, transparent 70%);
+      opacity: 0.6;
+      animation: float 20s ease-in-out infinite;
+    }
+
+    .bg-decoration::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -20%;
+      width: 60vw;
+      height: 60vw;
+      background: radial-gradient(circle, #f0e6d8 0%, transparent 70%);
+      opacity: 0.5;
+      animation: float 25s ease-in-out infinite reverse;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(30px, -30px) scale(1.05); }
+    }
+
+    /* 主容器 */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Hero 区域 */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 60px 0;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 32px;
+      animation: fadeInDown 0.8s ease-out;
+    }
+
+    .hero-badge span {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    .hero h1 {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: clamp(48px, 10vw, 72px);
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+      animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .hero-subtitle {
+      font-size: 18px;
+      color: var(--muted);
+      margin-bottom: 48px;
+      animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+
+    .hero-subtitle em {
+      font-style: normal;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* 按钮 */
+    .btn-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      animation: fadeInUp 0.8s ease-out 0.6s both;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 16px 32px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-family: inherit;
+      font-size: 16px;
+      color: var(--fg);
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px var(--shadow);
+    }
+
+    .btn:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 30px var(--shadow);
+      border-color: var(--accent);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent) 0%, #d4a0a5 100%);
+      border-color: transparent;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      border-color: transparent;
+      box-shadow: 0 8px 30px rgba(232, 180, 184, 0.4);
+    }
+
+    .btn svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* Section */
+    section {
+      padding: 80px 0;
+    }
+
+    .section-title {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 32px;
+      text-align: center;
+      margin-bottom: 48px;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 2px;
+      background: var(--accent);
+      margin: 16px auto 0;
+      border-radius: 1px;
+    }
+
+    /* 下载卡片 */
+    .download-cards {
+      display: flex;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .download-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 20px;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      flex: 1;
+    }
+
+    .download-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px var(--shadow);
+    }
+
+    .download-card h3 {
+      font-size: 18px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .download-card p {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+
+    .download-card .btn {
+      width: 100%;
+      min-width: 120px;
+      justify-content: center;
+      padding: 10px 16px;
+      font-size: 13px;
+      margin-top: auto;
+    }
+
+    /* 使用方式 */
+    .usage-section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px;
+      margin-top: 40px;
+    }
+
+    .usage-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+    }
+
+    .usage-tab {
+      padding: 8px 20px;
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--muted);
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .usage-tab.active {
+      background: var(--accent-soft);
+      color: var(--fg);
+    }
+
+    .usage-tab:hover:not(.active) {
+      background: var(--bg);
+    }
+
+    .usage-content {
+      display: none;
+    }
+
+    .usage-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .code-block {
+      background: #2d2520;
+      color: #f5ebe0;
+      padding: 20px 24px;
+      border-radius: 12px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 14px;
+      line-height: 1.6;
+      overflow-x: auto;
+      position: relative;
+    }
+
+    .code-block .comment {
+      color: #8a7f72;
+    }
+
+    .code-block .keyword {
+      color: #d4a0a5;
+    }
+
+    .code-block .string {
+      color: #a8c0a8;
+    }
+
+    .code-block::before {
+      content: attr(data-label);
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 12px;
+      color: #8a7f72;
+      font-family: 'Noto Serif SC', serif;
+    }
+
+    .copy-btn {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      padding: 6px 12px;
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 6px;
+      color: #f5ebe0;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* 特性列表 */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-top: 48px;
+    }
+
+    .feature {
+      text-align: center;
+      padding: 24px;
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--accent-soft);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 24px;
+    }
+
+    .feature h4 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .feature p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--muted);
+      font-size: 14px;
+      border-top: 1px solid var(--border);
+      margin-top: 40px;
+    }
+
+    footer a {
+      color: var(--fg);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    footer a:hover {
+      color: var(--accent);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    /* 动画 */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* 响应式 */
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 40px;
+      }
+
+      .btn-group {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .download-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .features {
+        grid-template-columns: repeat(2, 1fr);
+      } {
+        padding: 24px;
+      }
+
+      .usage-tabs {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-decoration"></div>
+
+  <div class="container">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-badge">
+        <span></span>
+        开源免费 · 即插即用
+      </div>
+      <h1>Love Companion</h1>
+      <p class="hero-subtitle">给 AI 加一个 <em>恋人模式</em><br>8 种人设，温柔陪伴每一刻</p>
+      <div class="btn-group">
+        <a href="#download" class="btn btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          立即下载
+        </a>
+        <a href="https://github.com/MoYan1638/love-companion" class="btn" target="_blank">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-2.181 0 0 .967-.308 3.168 1.175.926-.259 1.909-.387 2.887-.387.978 0 1.961.128 2.887.387 2.201-1.483 3.168-1.175 3.168-1.175.652.657.241 1.878.117 2.181.767.84 1.236 1.91 1.236 3.221 0 4.609-2.807 5.624-5.467 5.931.36.31.681.921.681 1.862v2.234c0 .314.193.689.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          GitHub
+        </a>
+      </div>
+    </section>
+
+    <!-- 下载 -->
+    <section id="download">
+      <h2 class="section-title">选择你的平台</h2>
+      <div class="download-cards">
+        <div class="download-card">
+          <h3>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-2.181 0 0 .967-.308 3.168 1.175.926-.259 1.909-.387 2.887-.387.978 0 1.961.128 2.887.387 2.201-1.483 3.168-1.175 3.168-1.175.652.657.241 1.878.117 2.181.767.84 1.236 1.91 1.236 3.221 0 4.609-2.807 5.624-5.467 5.931.36.31.681.921.681 1.862v2.234c0 .314.193.689.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            GitHub
+          </h3>
+          <p>查看源码、Star 支持、提交 Issue</p>
+          <a href="https://github.com/MoYan1638/love-companion" class="btn" target="_blank">
+            前往 GitHub →
+          </a>
+        </div>
+
+        <div class="download-card">
+          <h3>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+              <line x1="12" y1="22.08" x2="12" y2="12"/>
+            </svg>
+            ClawHub
+          </h3>
+          <p>OpenClaw 官方技能市场，一键安装</p>
+          <a href="https://clawhub.ai/moyan1638/love-companion" class="btn" target="_blank">
+            前往 ClawHub →
+          </a>
+        </div>
+
+        <div class="download-card">
+          <h3>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 16v-4"/>
+              <path d="M12 8h.01"/>
+            </svg>
+            SkillHub
+          </h3>
+          <p>通用技能平台，跨框架支持</p>
+          <a href="https://skillhub.cn/skills/love-companion" class="btn" target="_blank">
+            前往 SkillHub →
+          </a>
+        </div>
+      </div>
+
+      <!-- 使用方式 -->
+      <div class="usage-section">
+        <div class="usage-tabs">
+          <button class="usage-tab active" data-tab="cli">命令行安装</button>
+          <button class="usage-tab" data-tab="agent">对话指令</button>
+          <button class="usage-tab" data-tab="config">配置示例</button>
+        </div>
+
+        <div class="usage-content active" id="tab-cli">
+          <div class="code-block" data-label="终端" style="position: relative;">
+            <span class="comment"># ClawHub 安装（推荐）</span><br>
+            <span class="keyword">openclaw</span> skills install love-companion<br><br>
+            <span class="comment"># 或从 GitHub 克隆</span><br>
+            <span class="keyword">git</span> clone https://github.com/MoYan1638/love-companion.git
+            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+          </div>
+        </div>
+
+        <div class="usage-content" id="tab-agent">
+          <div class="code-block" data-label="对话" style="position: relative;">
+            <span class="comment"># 启用恋人模式</span><br>
+            <span class="keyword">/恋人启用</span><br><br>
+            <span class="comment"># 切换人设</span><br>
+            <span class="keyword">/恋人套用</span> <span class="string">温柔学姐</span><br><br>
+            <span class="comment"># 自定义配置</span><br>
+            <span class="keyword">/恋人自定义</span> <span class="string">--name 小雪 --style 温柔</span>
+            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+          </div>
+        </div>
+
+        <div class="usage-content" id="tab-config">
+          <div class="code-block" data-label="JSON" style="position: relative;">
+            {<br>
+            &nbsp;&nbsp;<span class="string">"name"</span>: <span class="string">"小雪"</span>,<br>
+            &nbsp;&nbsp;<span class="string">"persona"</span>: <span class="string">"温柔学姐"</span>,<br>
+            &nbsp;&nbsp;<span class="string">"intimacy"</span>: <span class="keyword">3</span>,<br>
+            &nbsp;&nbsp;<span class="string">"memory_enabled"</span>: <span class="keyword">true</span><br>
+            }
+            <button class="copy-btn" onclick="copyCode(this)">复制</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 特性 -->
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">🩷</div>
+          <h4>8 种人设</h4>
+          <p>温柔、傲娇、高冷、元气、病娇、邻家、神秘、知性</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">💭</div>
+          <h4>记忆系统</h4>
+          <p>记住你们的每一次对话</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">📈</div>
+          <h4>感情升温</h4>
+          <p>互动越多，关系越亲密</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🔓</div>
+          <h4>开源免费</h4>
+          <p>MIT 协议，随意修改</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="footer-links">
+        <a href="https://github.com/MoYan1638/love-companion" target="_blank">GitHub</a>
+        <a href="https://juejin.cn/post/7634814742016475155" target="_blank">掘金</a>
+        <a href="http://xhslink.com/o/2tHfcJ8rYw5" target="_blank">小红书</a>
+      </div>
+      <p>Made with 🩷 by <a href="https://github.com/MoYan1638" target="_blank">MoYan</a></p>
+    </footer>
+  </div>
+
+  <script>
+    // Tab 切换
+    document.querySelectorAll('.usage-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.usage-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.usage-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+      });
+    });
+
+    // 复制代码
+    function copyCode(btn) {
+      const block = btn.parentElement;
+      const text = block.innerText.replace('复制', '').replace('终端', '').replace('对话', '').replace('JSON', '');
+      navigator.clipboard.writeText(text.trim()).then(() => {
+        btn.textContent = '已复制!';
+        setTimeout(() => btn.textContent = '复制', 2000);
+      });
+    }
+
+    // 平滑滚动
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
+</body>
+</html>
