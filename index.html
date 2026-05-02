@@ -545,19 +545,32 @@
       }
 
       .usage-tabs {
-        flex-wrap: wrap;
-        justify-content: center;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        /* 隐藏滚动条 */
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+
+      .usage-tabs::-webkit-scrollbar {
+        display: none;
       }
 
       .usage-tab {
         font-size: 13px;
         padding: 8px 14px;
+        flex-shrink: 0;
+        scroll-snap-align: start;
       }
 
       .code-block {
         font-size: 12px;
         padding: 16px;
         overflow-x: auto;
+        word-break: break-all;
+        white-space: pre-wrap;
       }
 
       /* 特性卡片两列 */
