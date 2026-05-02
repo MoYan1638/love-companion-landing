@@ -546,23 +546,15 @@
 
       .usage-tabs {
         flex-wrap: nowrap;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-        /* 隐藏滚动条 */
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-      }
-
-      .usage-tabs::-webkit-scrollbar {
-        display: none;
+        gap: 4px;
       }
 
       .usage-tab {
-        font-size: 13px;
-        padding: 8px 14px;
-        flex-shrink: 0;
-        scroll-snap-align: start;
+        font-size: 12px;
+        padding: 8px 6px;
+        flex: 1 1 0;
+        text-align: center;
+        min-width: 0;
       }
 
       .code-block {
@@ -687,7 +679,7 @@
       <!-- 使用方式 -->
       <div class="usage-section">
         <div class="usage-tabs">
-          <button class="usage-tab active" data-tab="cli">命令行安装</button>
+          <button class="usage-tab active" data-tab="cli">命令行</button>
           <button class="usage-tab" data-tab="agent">对话指令</button>
           <button class="usage-tab" data-tab="config">配置示例</button>
           <button class="usage-tab" data-tab="universal">通用 AI</button>
