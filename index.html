@@ -967,10 +967,160 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* ── 年龄确认门（合规：不得向未成年人提供虚拟伴侣服务） ── */
+    .age-gate {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: var(--bg);
+    }
+
+    .age-gate.hidden {
+      display: none;
+    }
+
+    .age-card {
+      max-width: 460px;
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px 32px;
+      text-align: center;
+      box-shadow: 0 20px 60px var(--shadow);
+    }
+
+    .age-card .age-emoji {
+      font-size: 40px;
+      margin-bottom: 16px;
+    }
+
+    .age-card h2 {
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 24px;
+      font-weight: 400;
+      margin-bottom: 16px;
+    }
+
+    .age-card p {
+      font-size: 14px;
+      color: var(--muted);
+      text-align: left;
+      margin-bottom: 12px;
+    }
+
+    .age-card .age-note {
+      font-size: 12px;
+      margin-bottom: 28px;
+    }
+
+    .age-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .age-actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .age-denied {
+      display: none;
+    }
+
+    .age-denied.show {
+      display: block;
+    }
+
+    .age-denied p {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    /* 页脚免责声明（卡片式） */
+    .disclaimer-card {
+      max-width: 720px;
+      margin: 28px auto 0;
+      background: linear-gradient(135deg, rgba(232, 180, 184, 0.08), rgba(245, 213, 216, 0.16));
+      border: 1px solid var(--accent-soft);
+      border-radius: 18px;
+      padding: 24px 30px;
+      text-align: left;
+      font-size: 12.5px;
+      line-height: 2.1;
+      color: var(--muted);
+    }
+
+    .disclaimer-card .dc-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'ZCOOL XiaoWei', serif;
+      font-size: 16px;
+      color: var(--fg);
+      margin-bottom: 10px;
+    }
+
+    .disclaimer-card .dc-head::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--accent-soft), transparent);
+    }
+
+    .disclaimer-card .dc-list {
+      list-style: none;
+    }
+
+    .disclaimer-card .dc-list li {
+      position: relative;
+      padding-left: 18px;
+    }
+
+    .disclaimer-card .dc-list li::before {
+      content: '🩷';
+      position: absolute;
+      left: 0;
+      top: 0;
+      font-size: 10px;
+    }
+
+    .disclaimer-card strong {
+      color: var(--fg);
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
   <div class="bg-decoration"></div>
+
+  <!-- 年龄确认门：未确认前内容不可见（合规硬要求） -->
+  <div class="age-gate" id="ageGate" role="dialog" aria-modal="true" aria-label="年龄确认">
+    <div class="age-card">
+      <div class="age-emoji">🩷</div>
+      <div id="ageAsk">
+        <h2>在你进来之前</h2>
+        <p><strong>接下来遇到的是 AI 角色扮演。</strong>与你对话的是 AI 扮演的虚构角色，不是真实的人；所有对话内容均由 AI 生成，它没有真实的情感与人格，请勿替代真实社交或专业心理帮助。</p>
+        <p><strong>本服务不向未成年人提供。</strong>依据《人工智能拟人化互动服务管理暂行办法》及相关规定，虚拟伴侣类服务仅面向成年人。</p>
+        <p class="age-note">继续访问即表示你已阅读并理解以上内容。</p>
+        <div class="age-actions">
+          <button class="btn btn-primary" id="ageYes">我已年满 18 周岁，进入</button>
+          <button class="btn" id="ageNo">我未满 18 周岁</button>
+        </div>
+      </div>
+      <div class="age-denied" id="ageDenied">
+        <h2>下次再见啦</h2>
+        <p>本服务仅面向年满 18 周岁的用户，你现在还不能进入。网络上还有很多有意思的事情等你发现 🌱</p>
+        <button class="btn" onclick="window.close(); location.href='https://www.baidu.com';">离开本页</button>
+      </div>
+    </div>
+  </div>
 
   <div class="container">
     <!-- Hero -->
@@ -997,6 +1147,9 @@
         </span>
       </h1>
       <p class="hero-subtitle">给 AI 加一个 <em>恋人模式</em><br>8 种人设，温柔陪伴每一刻</p>
+      <p style="font-size:13px; color:var(--muted); margin:-32px 0 40px;">
+        对话内容由 AI 生成 · 虚构角色扮演 · 仅限成年人
+      </p>
       <div class="btn-group">
         <a href="#download" class="btn btn-primary">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -1269,10 +1422,48 @@
         <a href="https://blog.csdn.net/MY_xiaojie" target="_blank" rel="noopener">CSDN</a>
       </div>
       <p>Made with 🩷 by <a href="https://github.com/MoYan1638" target="_blank">MoYan</a></p>
+      <div class="disclaimer-card">
+        <div class="dc-head">🩷 使用须知与免责声明</div>
+        <ul class="dc-list">
+          <li>Love Companion 是加载在 AI Agent 中的角色扮演技能。启用后，你与角色的<strong>所有对话内容均由 AI 生成</strong>，角色纯属虚构，不具备真实人格与情感，不代表真实人际关系。</li>
+          <li>依据《人工智能拟人化互动服务管理暂行办法》，本服务<strong>不向未成年人提供</strong>。</li>
+          <li>AI 陪伴不能替代真实社交与专业心理咨询；如有心理困扰，请寻求专业帮助。</li>
+          <li>对话数据全部存储在用户本地，本站不上传、不收集。</li>
+        </ul>
+      </div>
     </footer>
   </div>
 
   <script>
+    // ── 年龄确认门：确认一次后记住，未确认前内容不可见 ──
+    (() => {
+      const gate = document.getElementById('ageGate');
+      if (!gate) return;
+      const KEY = 'lc-age-confirmed-18';
+      let confirmed = false;
+      try { confirmed = localStorage.getItem(KEY) === 'yes'; } catch (_) {}
+
+      if (confirmed) {
+        gate.classList.add('hidden');
+      } else {
+        document.documentElement.style.overflow = 'hidden';
+      }
+
+      const pass = () => {
+        gate.classList.add('hidden');
+        document.documentElement.style.overflow = '';
+        try { localStorage.setItem(KEY, 'yes'); } catch (_) {}
+      };
+
+      const deny = () => {
+        document.getElementById('ageAsk').style.display = 'none';
+        document.getElementById('ageDenied').classList.add('show');
+      };
+
+      document.getElementById('ageYes')?.addEventListener('click', pass);
+      document.getElementById('ageNo')?.addEventListener('click', deny);
+    })();
+
     // Tab 切换
     // Tab 滑块控制
     function updateTabSlider(tab) {
